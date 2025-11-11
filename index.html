@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Бесплатный конвертер JSON, YAML, CSV, XML. Конвертируй форматы данных онлайн без регистрации.">
+    <meta name="keywords" content="JSON конвертер, YAML конвертер, CSV конвертер, XML конвертер, бесплатный инструмент">
+    <title>JSON ↔ YAML ↔ CSV Конвертер | Бесплатный инструмент</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 1200px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        select, button {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        select:hover, button:hover {
+            border-color: #667eea;
+            background: #f9f9f9;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .converters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .converter-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        textarea {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 300px;
+            background: #fafafa;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+
+        .copy-btn, .clear-btn {
+            padding: 8px 12px;
+            font-size: 12px;
+            flex: 1;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+        }
+
+        .clear-btn {
+            background: #f0f0f0;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #667eea;
+            min-height: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .converters {
+                grid-template-columns: 1fr;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+                height: 40px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+
+        .info-section {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 30px;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: none;
+            font-size: 13px;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .support-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .support-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔄 Конвертер Данных</h1>
+            <p class="subtitle">JSON ↔ YAML ↔ CSV ↔ XML - бесплатно и без ограничений</p>
+        </header>
+
+        <div id="message" class="message"></div>
+
+        <div class="controls">
+            <button onclick="convertJson2Yaml()">JSON → YAML</button>
+            <button onclick="convertYaml2Json()">YAML → JSON</button>
+            <button onclick="convertJson2Csv()">JSON → CSV</button>
+            <button onclick="convertCsv2Json()">CSV → JSON</button>
+            <button onclick="prettyFormat()">Форматировать</button>
+            <button onclick="minifyJson()">Минифицировать</button>
+        </div>
+
+        <div class="converters">
+            <div class="converter-block">
+                <label for="input">Входные данные</label>
+                <textarea id="input" placeholder="Вставьте JSON, YAML, CSV или XML здесь..."></textarea>
+                <div class="action-buttons">
+                    <button class="clear-btn" onclick="clearInput()">Очистить</button>
+                </div>
+            </div>
+
+            <div class="converter-block">
+                <label for="output">Результат</label>
+                <textarea id="output" readonly placeholder="Результат появится здесь..."></textarea>
+                <div class="action-buttons">
+                    <button class="copy-btn" onclick="copyToClipboard()">📋 Копировать</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>ℹ️ Поддерживаемые форматы</h3>
+            <p><strong>JSON</strong> - компактный формат обмена данными. Используется в API и веб-приложениях.</p>
+            <p style="margin-top: 8px;"><strong>YAML</strong> - удобный для чтения формат конфигураций. Часто используется в Docker, Kubernetes и других инструментах.</p>
+            <p style="margin-top: 8px;"><strong>CSV</strong> - формат табличных данных. Совместим с Excel и Google Sheets.</p>
+            <p style="margin-top: 8px;"><strong>XML</strong> - расширяемый язык разметки для структурированных данных.</p>
+        </div>
+
+        <div class="support-link">
+            ⭐ Нравится инструмент? <a href="https://github.com/N39r19/data-converter" target="_blank">Помогите развивать проект</a>
+        </div>
+    </div>
+
+    <script>
+        // YAML парсер и генератор (простейшая реализация)
+        const YAML_Lite = {
+            parse: function(yaml) {
+                try {
+                    const lines = yaml.trim().split('\n');
+                    const result = {};
+                    let currentObj = result;
+                    const stack = [];
+
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i];
+                        if (!line.trim() || line.trim().startsWith('#')) continue;
+
+                        const indent = line.search(/\S/);
+                        const content = line.trim();
+
+                        if (content.includes(':')) {
+                            const [key, ...valueParts] = content.split(':');
+                            const value = valueParts.join(':').trim();
+
+                            if (value === '' && i + 1 < lines.length) {
+                                currentObj[key.trim()] = {};
+                                stack.push(currentObj);
+                                currentObj = currentObj[key.trim()];
+                            } else {
+                                currentObj[key.trim()] = this.parseValue(value);
+                            }
+                        } else if (content.startsWith('- ')) {
+                            // Массив
+                            if (!Array.isArray(currentObj.items)) {
+                                currentObj.items = [];
+                            }
+                            currentObj.items.push(this.parseValue(content.slice(2)));
+                        }
+                    }
+
+                    return result;
+                } catch (e) {
+                    throw new Error('Ошибка парсинга YAML: ' + e.message);
+                }
+            },
+
+            stringify: function(obj, indent = 0) {
+                const spaces = ' '.repeat(indent);
+                let result = '';
+
+                for (const [key, value] of Object.entries(obj)) {
+                    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                        result += spaces + key + ':\n';
+                        result += this.stringify(value, indent + 2);
+                    } else if (Array.isArray(value)) {
+                        result += spaces + key + ':\n';
+                        value.forEach(item => {
+                            result += spaces + '  - ' + JSON.stringify(item) + '\n';
+                        });
+                    } else {
+                        result += spaces + key + ': ' + JSON.stringify(value) + '\n';
+                    }
+                }
+
+                return result;
+            },
+
+            parseValue: function(value) {
+                if (value === 'null' || value === '') return null;
+                if (value === 'true') return true;
+                if (value === 'false') return false;
+                if (!isNaN(value) && value !== '') return Number(value);
+                return value.replace(/^["']|["']$/g, '');
+            }
+        };
+
+        // Функции конвертирования
+        function showMessage(text, type = 'success') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            setTimeout(() => { msg.className = 'message'; }, 3000);
+        }
+
+        function convertJson2Yaml() {
+            try {
+                const input = document.getElementById('input').value;
+                const json = JSON.parse(input);
+                const yaml = YAML_Lite.stringify(json);
+                document.getElementById('output').value = yaml;
+                showMessage('✅ Конверсия JSON → YAML успешна!');
+            } catch (e) {
+                showMessage('❌ Ошибка: ' + e.message, 'error');
+            }
+        }
+
+        function convertYaml2Json() {
+            try {
+                const input = document.getElementById('input').value;
+                const yaml = YAML_Lite.parse(input);
+                document.getElementById('output').value = JSON.stringify(yaml, null, 2);
+                showMessage('✅ Конверсия YAML → JSON успешна!');
+            } catch (e) {
+                showMessage('❌ Ошибка: ' + e.message, 'error');
+            }
+        }
+
+        function convertJson2Csv() {
+            try {
+                const input = document.getElementById('input').value;
+                const data = JSON.parse(input);
+
+                if (!Array.isArray(data)) {
+                    showMessage('❌ Ошибка: JSON должен быть массивом объектов', 'error');
+                    return;
+                }
+
+                if (data.length === 0) {
+                    showMessage('❌ Ошибка: Пустой массив', 'error');
+                    return;
+                }
+
+                const headers = Object.keys(data[0]);
+                let csv = headers.join(',') + '\n';
+
+                data.forEach(row => {
+                    const values = headers.map(h => {
+                        const val = row[h];
+                        if (typeof val === 'string' && (val.includes(',') || val.includes('"'))) {
+                            return '"' + val.replace(/"/g, '\\"') + '"';
+                        }
+                        return val;
+                    });
+                    csv += values.join(',') + '\n';
+                });
+
+                document.getElementById('output').value = csv;
+                showMessage('✅ Конверсия JSON → CSV успешна!');
+            } catch (e) {
+                showMessage('❌ Ошибка: ' + e.message, 'error');
+            }
+        }
+
+        function convertCsv2Json() {
+            try {
+                const input = document.getElementById('input').value;
+                const lines = input.trim().split('\n');
+
+                if (lines.length < 2) {
+                    showMessage('❌ Ошибка: CSV должен иметь заголовок и данные', 'error');
+                    return;
+                }
+
+                const headers = lines[0].split(',').map(h => h.trim());
+                const result = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const values = lines[i].split(',').map(v => v.trim());
+                    const obj = {};
+                    headers.forEach((h, idx) => {
+                        obj[h] = values[idx] || '';
+                    });
+                    result.push(obj);
+                }
+
+                document.getElementById('output').value = JSON.stringify(result, null, 2);
+                showMessage('✅ Конверсия CSV → JSON успешна!');
+            } catch (e) {
+                showMessage('❌ Ошибка: ' + e.message, 'error');
+            }
+        }
+
+        function prettyFormat() {
+            try {
+                const input = document.getElementById('input').value;
+                const json = JSON.parse(input);
+                document.getElementById('output').value = JSON.stringify(json, null, 2);
+                showMessage('✅ Данные отформатированы!');
+            } catch (e) {
+                showMessage('❌ Ошибка форматирования: ' + e.message, 'error');
+            }
+        }
+
+        function minifyJson() {
+            try {
+                const input = document.getElementById('input').value;
+                const json = JSON.parse(input);
+                document.getElementById('output').value = JSON.stringify(json);
+                showMessage('✅ JSON минифицирован!');
+            } catch (e) {
+                showMessage('❌ Ошибка: ' + e.message, 'error');
+            }
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            output.select();
+            document.execCommand('copy');
+            showMessage('📋 Скопировано в буфер обмена!');
+        }
+
+        function clearInput() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+        }
+
+        // Пример данных при загрузке
+        window.onload = function() {
+            const exampleJson = {
+                "пользователь": {
+                    "имя": "Иван",
+                    "возраст": 30,
+                    "город": "Москва"
+                },
+                "проекты": ["Flutter", "React", "Node.js"]
+            };
+            document.getElementById('input').value = JSON.stringify(exampleJson, null, 2);
+        };
+    </script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        // Замени G-XXXXXXXXXX на свой ID Google Analytics
+    </script>
+</body>
+</html>
